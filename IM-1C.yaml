@@ -1,147 +1,252 @@
-openapi: 3.0.0
-info:
-  version: '1.0'
-  title: Интернет-магазин
-  license:
-    name: MIT
-  description: 'API 1C:Retail для интернет-магазина'
-  contact:
-    name: Vladimir Ischenko
-    email: vlaishchenko@beeline.ru
-servers:
-  - url: 'http://ms-1cutweb001/UTTEST_Krivoshein/hs/OrderCalculateCart'
-    description: Vladimir Ischenko
-paths:
-  /GetInsurancePrice:
-    post:
-      summary: Цена страховки
-      operationId: getInsurancePrice
-      parameters: []
-      responses:
-        '200':
-          description: Цена страховки
-          headers: {}
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  insurancePremium:
-                    type: integer
-                  isOnline:
-                    type: boolean
-                x-examples:
-                  example-1:
-                    insurancePremium: 670
-                    isOnline: true
-              examples:
-                Online:
-                  value:
-                    insurancePremium: 670
-                    isOnline: true
-        '204':
-          description: No Content
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                  errorCode:
-                    type: integer
-                x-examples:
-                  example-1:
-                    error: 'Не переданы значения параметров: marketСode'
-                    errorCode: 400
-              examples:
-                NotFound:
-                  value:
-                    error: Не удалось получить цену страховки
-                    errorCode: 204
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                MissParam:
-                  value:
-                    error: 'Не переданы значения параметров: duration'
-                    errorCode: 400
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      description: >-
-        Метод для получения цены страховки. Цена возвращается из значения
-        справочника 'Цены страховок' для офлайн-страховок и из онлайн-запроса к
-        API страховой компании
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              x-examples:
-                example-1:
-                  article: T136
-                  duration: '12'
-                  insuranceSum: 100000.01
-              properties:
-                marketCode:
-                  type: string
-                  example: VIP
-                  description: 'Код филиала, маркеткод'
-                article:
-                  type: string
-                  description: 'Код артикула, номенклатура'
-                duration:
-                  type: integer
-                  description: Срок страховки в месяцах
-                insuranceSum:
-                  type: number
-                  description: Стоимость страхуемого товара
-              required:
-                - article
-                - duration
-                - insuranceSum
-            examples:
-              Online:
-                value:
-                  article: T136
-                  duration: 6
-                  insuranceSum: 10000
-              Offline:
-                value:
-                  marketCode: VIP
-                  article: T136
-                  duration: 12
-                  insuranceSum: 10000
-              NotFound:
-                value:
-                  marketCode: VIP
-                  article: ERR
-                  duration: 60
-                  insuranceSum: 100000.01
-      tags:
-        - insurance
-components:
-  schemas:
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-        errorCode:
-          type: integer
-      x-examples:
-        example-1:
-          error: 'Не переданы значения параметров: marketСode'
-          errorCode: 400
-      description: Сообщение об ошибке
-  securitySchemes: {}
-tags:
-  - name: insurance
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "Интернет-магазин",
+    "description" : "API 1C:Retail для интернет-магазина",
+    "contact" : {
+      "name" : "Vladimir Ischenko",
+      "email" : "vlaishchenko@beeline.ru"
+    },
+    "license" : {
+      "name" : "MIT"
+    },
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "https://virtserver.swaggerhub.com/ivovik/IM-1C-Retail/1.0.0",
+    "description" : "SwaggerHub API Auto Mocking"
+  }, {
+    "url" : "http://ms-1cutweb001/UTTEST_Krivoshein/hs/OrderCalculateCart",
+    "description" : "Vladimir Ischenko"
+  } ],
+  "tags" : [ {
+    "name" : "insurance"
+  } ],
+  "paths" : {
+    "/GetInsurancePrice" : {
+      "post" : {
+        "tags" : [ "insurance" ],
+        "summary" : "Цена страховки",
+        "description" : "Метод для получения цены страховки. Цена возвращается из значения справочника 'Цены страховок' для офлайн-страховок и из онлайн-запроса к API страховой компании",
+        "operationId" : "getInsurancePrice",
+        "parameters" : [ ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/GetInsurancePrice_body"
+              },
+              "examples" : {
+                "Online" : {
+                  "value" : {
+                    "article" : "T136",
+                    "duration" : 6,
+                    "insuranceSum" : 10000
+                  }
+                },
+                "Offline" : {
+                  "value" : {
+                    "marketCode" : "VIP",
+                    "article" : "T136",
+                    "duration" : 12,
+                    "insuranceSum" : 10000
+                  }
+                },
+                "NotFound" : {
+                  "value" : {
+                    "marketCode" : "VIP",
+                    "article" : "ERR",
+                    "duration" : 60,
+                    "insuranceSum" : 100000.01
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Цена страховки",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_200"
+                },
+                "examples" : {
+                  "Online" : {
+                    "value" : {
+                      "insurancePremium" : 670,
+                      "isOnline" : true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "204" : {
+            "description" : "No Content или ошибка внешнего сервиса",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_204"
+                },
+                "examples" : {
+                  "NotFound" : {
+                    "value" : {
+                      "error" : "Не удалось получить цену страховки",
+                      "errorCode" : 204
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                },
+                "examples" : {
+                  "MissParam" : {
+                    "value" : {
+                      "error" : "Не переданы значения параметров: duration",
+                      "errorCode" : 400
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "255" : {
+            "description" : "Internal Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                },
+                "examples" : {
+                  "IntErr" : {
+                    "value" : {
+                      "error" : "Произошла ошибка при исполнении кода в 1С",
+                      "errorCode" : 255
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Error" : {
+        "type" : "object",
+        "properties" : {
+          "error" : {
+            "type" : "string"
+          },
+          "errorCode" : {
+            "type" : "integer"
+          },
+          "nameModule" : {
+            "type" : "string"
+          },
+          "stringNumber" : {
+            "type" : "string"
+          },
+          "errorDescription" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Сообщение об ошибке",
+        "x-examples" : {
+          "ErrorExample" : {
+            "error" : "Не переданы значения параметров: duration",
+            "errorCode" : 400
+          }
+        }
+      },
+      "GetInsurancePrice_body" : {
+        "required" : [ "article", "duration", "insuranceSum" ],
+        "type" : "object",
+        "properties" : {
+          "marketCode" : {
+            "type" : "string",
+            "description" : "Код филиала, маркеткод",
+            "example" : "VIP"
+          },
+          "article" : {
+            "type" : "string",
+            "description" : "Код артикула, номенклатура",
+            "example" : "T136"
+          },
+          "duration" : {
+            "type" : "integer",
+            "description" : "Срок страховки в месяцах",
+            "example" : 6
+          },
+          "insuranceSum" : {
+            "type" : "number",
+            "description" : "Стоимость страхуемого товара",
+            "example" : 10000
+          },
+          "insuredCount" : {
+            "type" : "integer",
+            "description" : "Количество застрахованных",
+            "example" : 1
+          }
+        }
+      },
+      "inline_response_200" : {
+        "type" : "object",
+        "properties" : {
+          "insurancePremium" : {
+            "type" : "integer"
+          },
+          "isOnline" : {
+            "type" : "boolean"
+          }
+        },
+        "x-examples" : {
+          "example-1" : {
+            "insurancePremium" : 670,
+            "isOnline" : true
+          }
+        }
+      },
+      "inline_response_204" : {
+        "type" : "object",
+        "properties" : {
+          "error" : {
+            "type" : "string"
+          },
+          "errorCode" : {
+            "type" : "integer"
+          }
+        },
+        "x-examples" : {
+          "example-1" : {
+            "error" : "Не переданы значения параметров: marketСode",
+            "errorCode" : 400
+          }
+        }
+      }
+    },
+    "examples" : { },
+    "securitySchemes" : { }
+  }
+}
